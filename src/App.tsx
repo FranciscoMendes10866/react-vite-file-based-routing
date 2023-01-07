@@ -1,4 +1,3 @@
-import React from "react";
 import {
   createBrowserRouter,
   RouterProvider,
@@ -27,30 +26,24 @@ for (const path of Object.keys(pages)) {
     ? fileName.replace("$", ":")
     : fileName.replace(/\/index/, "");
 
-  // @ts-ignore
-  const loaderFn = pages[path]?.loader as unknown as LoaderFunction | undefined;
-  // @ts-ignore
-  const actionFn = pages[path]?.action as unknown as ActionFunction | undefined;
-  // @ts-ignore
-  const errorBoundaryElement = pages[path]?.ErrorBoundary as unknown as JSX.Element;
-
   routes.push({
     path: fileName === "index" ? "/" : `/${normalizedPathName.toLowerCase()}`,
     // @ts-ignore
     Element: pages[path].default,
-    loader: loaderFn,
-    action: actionFn,
-    ErrorBoundary: errorBoundaryElement,
+    // @ts-ignore
+    loader: pages[path]?.loader as unknown as LoaderFunction | undefined,
+    // @ts-ignore
+    action: pages[path]?.action as unknown as ActionFunction | undefined,
+    // @ts-ignore
+    ErrorBoundary: pages[path]?.ErrorBoundary as unknown as JSX.Element,
   });
 }
 
 const router = createBrowserRouter(
-  routes.map(({ path, Element, loader, action, ErrorBoundary }) => ({
-    path,
+  routes.map(({ Element, ErrorBoundary, ...rest }) => ({
+    ...rest,
     // @ts-ignore
     element: <Element />,
-    loader,
-    action,
     // @ts-ignore
     ...(ErrorBoundary && { errorElement: <ErrorBoundary /> }),
   }))
